@@ -5,14 +5,20 @@ import net.jcazevedo.moultingyaml.DefaultYamlProtocol._
 import better.files.{File => ScalaFile, _}
 import better.files.Dsl._
 
-class Conf(settings: Seq[String]) extends ScallopConf(settings) {
-  val root       = opt[String](required = true)
-  val configfile = opt[String](required = true)
+class Conf(settings: Seq[String]) extends ScallopConf(Seq("--help")) {
+  version("iskelet 0.1.0 (c) 2017 Orhan Balci")
+  banner("""Usage: java -jar iskelet.jar [OPTION]
+           |Iskelet creates folder structure described in configfile option
+           |Options:
+           |""".stripMargin)
+  val root =
+    opt[String](required = true, descr = "Root directory where folder structure will be created")
+  val configfile = opt[String](required = true, descr = "Folder structure definition yaml file")
   verify()
 }
 
-object Hello extends App {
-  val conf = new Conf(args);
+object Main extends App {
+  val conf              = new Conf(args);
   val configFileContent = ScalaFile(conf.configfile()).contentAsString;
   val configAst         = configFileContent.parseYaml;
   createFolder(conf.root().toFile, configAst.asInstanceOf[YamlObject]);
@@ -23,15 +29,14 @@ object Hello extends App {
 
         if (key.contains(".")) {
           println(s"Creating file $parent/$key")
-          (parent/key).createIfNotExists();
-        } 
-        else{
-            println(s"Creating folder $parent/$key")
-            mkdir(parent/key)
+          (parent / key).createIfNotExists();
+        } else {
+          println(s"Creating folder $parent/$key")
+          mkdir(parent / key)
         }
 
         if (value.isInstanceOf[YamlObject]) {
-          createFolder(parent/key, value.asInstanceOf[YamlObject]);
+          createFolder(parent / key, value.asInstanceOf[YamlObject]);
         }
       }
     }
