@@ -11,5 +11,8 @@ lazy val root = (project in file(".")).settings(
   libraryDependencies += scalaTest              % Test,
   libraryDependencies += "org.rogach"           %% "scallop" % "3.1.1",
   libraryDependencies += "net.jcazevedo"        %% "moultingyaml" % "0.4.0",
-  libraryDependencies += "com.github.pathikrit" %% "better-files" % "3.4.0"
+  libraryDependencies += "com.github.pathikrit" %% "better-files" % "3.4.0",
+  mainClass in assembly := Some("net.orhanbalci.iskelet.Main"),
+  assemblyJarName in assembly := "iskelet.jar"
+  
 )
