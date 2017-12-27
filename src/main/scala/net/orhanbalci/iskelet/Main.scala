@@ -5,23 +5,26 @@ import net.jcazevedo.moultingyaml.DefaultYamlProtocol._
 import better.files.{File => ScalaFile, _}
 import better.files.Dsl._
 
-class Conf(settings: Seq[String]) extends ScallopConf(Seq("--help")) {
+class Conf(settings: Seq[String]) extends ScallopConf(settings) {
   version("iskelet 0.1.0 (c) 2017 Orhan Balci")
   banner("""Usage: java -jar iskelet.jar [OPTION]
            |Iskelet creates folder structure described in configfile option
            |Options:
            |""".stripMargin)
   val root =
-    opt[String](required = true, descr = "Root directory where folder structure will be created")
-  val configfile = opt[String](required = true, descr = "Folder structure definition yaml file")
+    opt[String](descr = "Root directory where folder structure will be created")
+  val configfile = opt[String](descr = "Folder structure definition yaml file")
   verify()
 }
 
-object Main extends App {
-  val conf              = new Conf(args);
-  val configFileContent = ScalaFile(conf.configfile()).contentAsString;
-  val configAst         = configFileContent.parseYaml;
-  createFolder(conf.root().toFile, configAst.asInstanceOf[YamlObject]);
+object Main {
+
+  def main(args: Array[String]): Unit = {
+    val conf = new Conf(args);
+    val configFileContent = ScalaFile(conf.configfile()).contentAsString;
+    val configAst         = configFileContent.parseYaml;
+    createFolder(conf.root().toFile, configAst.asInstanceOf[YamlObject]);
+  }
 
   def createFolder(parent: ScalaFile, folders: YamlObject) {
     folders.fields foreach {
